@@ -31,7 +31,7 @@ def classify0(inX, dataSet, labels, k):
     # 排序
     # 将classCount字典分解为元组列表，然后使用itemgetter方法，按照第二个元素的次序（？）对元组进行排序
     # 此处的排序为逆序，即按照从最大到最小次序排序，最后返回发生频率最高的元素标签
-    sortedClassCount = sorted(classCount.iteritems(),
+    sortedClassCount = sorted(classCount.items(),
                               key=operator.itemgetter(1), reverse=True)
     return sortedClassCount[0][0]
 
