@@ -153,3 +153,33 @@ def create_tree(data_set, labels):
         )
 
     return my_tree
+
+
+def classify(input_tree: dict, feature_labels: list, test_vector):
+    """
+    使用决策树的分类函数,得出一个向量的分类
+    :param input_tree:          用上边create_tree函数创建出来的决策树？
+    :param feature_labels:      由特征的名称来组成的列表
+    :param test_vector:         要测试/分类的向量
+    :return: 分类的结果
+    >>>classify({'能够不浮出水面':{0:'no', 1:{'有鳍':{0:'no', 1:'yes'}}}}, \
+    ['能够不浮出水面', '有鳍'], [1,0])
+    'no'
+    """
+    first_str = list(input_tree.keys())[0]
+    second_dict = input_tree[first_str]
+
+    # 将标签字符串转换为索引
+    feature_index = feature_labels.index(first_str)  # 该特征在特征名称列表中的位置
+    for key in second_dict.keys():
+        if test_vector[feature_index] == key:
+            if isinstance(second_dict[key], dict):  # 类型为dict，表示还不是叶子节点，还有分支
+                class_label = classify(second_dict[key], feature_labels, test_vector)
+            else:   # 表示已经是叶子节点了
+                class_label = second_dict[key]
+    return class_label
+
+
+if __name__ == '__main__':
+    classify({'能够不浮出水面': {0: 'no', 1: {'有鳍': {0: 'no', 1: 'yes'}}}}, \
+             ['能够不浮出水面', '有鳍'], [1, 0])
