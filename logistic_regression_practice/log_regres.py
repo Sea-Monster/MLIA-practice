@@ -147,6 +147,68 @@ def stoc_gradient_ascent_advance(data_array, class_labels, num_iter=150):
     return weights
 
 
+def classify_vector(input_x, weights):
+    """
+
+    :param input_x:
+    :param weights:
+    :return:
+    """
+    prob = sigmoid(np.dot(input_x, weights))
+    if prob >0.5:
+        return 1.0
+    else:
+        return 0.0
+
+
+def colic_test():
+    """
+
+    :return:
+    """
+    file_path = os.path.abspath(os.path.dirname(__file__))
+    training_set = []
+    training_labels = []
+    # 读取文件中的内容，构建训练集，包括20个特征，以及一个最终的分类
+    with open(os.path.join(file_path, 'horseColicTraining.txt')) as fr:
+        for line in fr.readlines():
+            current_line = line.strip().split('\t')
+            line_arr = []
+            for i in range(21):
+                line_arr.append(float(current_line[i]))
+            training_set.append(line_arr)
+            training_labels.append(float(current_line[21]))
+    train_weights = stoc_gradient_ascent_advance(
+        np.array(training_set),
+        training_labels,
+        500
+    )
+    error_count = 0
+    num_test_vector = 0.0   # 这是什么变量
+
+    # 读取文件中的内容，构建测试集，并最终计算模型的错误率
+    with open(os.path.join(file_path, 'horseColicTest.txt')) as fr:
+        for line in fr.readlines():
+            num_test_vector += 1.0
+            current_line = line.strip().split('\t')
+            line_arr = []
+            for i in range(21):
+                line_arr.append(float(current_line[i]))
+            if int(classify_vector(np.array(line_arr), train_weights)) != int(current_line[21]):
+                error_count += 1
+    error_rate = float(error_count)/num_test_vector
+    print('the error rate of this test is: %f' %error_rate)
+    return error_rate
+
+
+def multi_test():
+    num_tests = 10
+    error_sum = 0.0
+    for k in range(num_tests):
+        error_sum += colic_test()
+    print('在 %d 次迭代之后，平均错误率为：%f' %(num_tests, error_sum/float(num_tests)))
+
+
 if __name__ == '__main__':
     # data_matrix, label_matrix = load_data_set()
     # print(data_matrix)
@@ -163,8 +225,11 @@ if __name__ == '__main__':
     # print(weights)
     # plot_best_fit(weights)
 
-    data_array, label_matrix = load_data_set()
-    weights = stoc_gradient_ascent_advance(np.array(data_array), label_matrix)
-    print(weights)
-    plot_best_fit(weights)
+    # data_array, label_matrix = load_data_set()
+    # weights = stoc_gradient_ascent_advance(np.array(data_array), label_matrix)
+    # print(weights)
+    # plot_best_fit(weights)
+
+
+    multi_test()
 
